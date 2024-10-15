@@ -87,7 +87,7 @@ app.post('/registerUser', async (req, res) =>
             }
 
          await db.query('INSERT INTO users (user_id, name, password) VALUES ($1, $2, $3)', [numUsers + 1, userName, userPassword]);
-         res.redirect('/signinUser');
+         res.redirect('/');
         } 
      catch (err) 
         {
@@ -108,9 +108,7 @@ app.post("/submit", async (req, res, next) =>
      const { userTitle, userContent } = req.body;
 
      try {
-        // Use parameterized query to avoid syntax issues
-        await db.query(
-            `INSERT INTO blogs (blog_id, date_created, content, creator_user_id, creator_name, title) VALUES ($1, $2, $3, $4, $5, $6)`, [ (await getAllPosts()).length + 1, new Date(), userContent, loggedInUserId, loggedInUsername, userTitle ]);
+        await db.query(`INSERT INTO blogs (blog_id, date_created, content, creator_user_id, creator_name, title) VALUES ($1, $2, $3, $4, $5, $6)`, [ (await getAllPosts()).length + 1, new Date(), userContent, loggedInUserId, loggedInUsername, userTitle ]);
          res.redirect("/home");
         }
      catch (err)
@@ -153,8 +151,7 @@ app.post("/update", async (req, res) =>
 
 app.get("/delete", async (req, res, next) =>
     {
-     const postId = parseInt(req.query.postId, 10); // Ensure postId is a valid number
-
+     const postId = parseInt(req.query.postId, 10);
      try 
         {
          const blogpost = await db.query(`SELECT * FROM blogs WHERE blog_id = $1`, [postId]);
